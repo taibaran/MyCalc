@@ -4,23 +4,43 @@
   <title>Chat with GPT-3</title>
   <script>
     async function chatWithGpt3() {
-      const prompt = document.getElementById('prompt').value;
-      const responseArea = document.getElementById('response');
+      try {
+        const prompt = document.getElementById('prompt').value;
+        const responseArea = document.getElementById('response');
 
-      const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer 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'
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          max_tokens: 60,
-        }),
-      });
+        console.log('Sending prompt:', prompt);
 
-      const data = await response.json();
-      responseArea.textContent = data.choices[0].text;
+        const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer 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'  // Replace with your actual key
+          },
+          body: JSON.stringify({
+            prompt: prompt,
+            max_tokens: 60,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('API response not OK:', response);
+          responseArea.textContent = 'Error: ' + response.status;
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Received response:', data);
+
+        if (data.choices && data.choices.length > 0) {
+          responseArea.textContent = data.choices[0].text;
+        } else {
+          console.error('No choices in response:', data);
+          responseArea.textContent = 'No response received';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        responseArea.textContent = 'Error: ' + error.message;
+      }
     }
   </script>
 </head>
