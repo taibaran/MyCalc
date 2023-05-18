@@ -5,7 +5,7 @@ html {
     display: flex;
     justify-content: center;
     color: #ecf0f1;
-    background-color: rgb(23, 24, 37);
+    background-color: rgb(102, 127, 140);
     font-family: 'Fjalla One', sans-serif;
     animation: fadein 1.5s;
 }
