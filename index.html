@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebGPU GPT Model Demo</title>
+    <meta
+      http-equiv="origin-trial"
+      content="Anx9P4m5tzLOL/wLICKy/mA+DRyoSsTkyqmnK5t+S7oyw7A2SeBI2jO4LKqoQiQgChP2MTtqMNKofelMwvGtPQsAAABKeyJvcmlnaW4iOiJodHRwczovL2ttZWFucy5vcmc6NDQzIiwiZmVhdHVyZSI6IldlYkdQVSIsImV4cGlyeSI6MTY5MTcxMTk5OX0="
+    />
+    <script src="tokenizer.js"></script>
+    <script src="instructions.js"></script>
+    <script src="model.js"></script>
+    <script src="globals.js"></script>
+  </head>
+  <body>
+    <h1>WebGPU GPT Model Demo</h1>
+    <p id="webgpuSupportMessage">Checking WebGPU support...</p>
+    <p>
+      <i>PS: Loading models is 5x slower on the web rather than running locally. Just <a href="https://github.com/0hq/WebGPT">clone the repo</a> and open!</i>
+    </p>
+
+    <button class="loadModelButton" onclick="loadModel('better_shakespeare', 'char')" disabled>Load Shakespeare Model</button>
+    <button class="loadModelButton" onclick="loadModel('gpt2', 'bpe')" disabled>Load GPT2 117M Model</button>
+    <button id="destroyCacheButton" onclick="destroyCache()" disabled>Destroy Cache</button>
+
+    <p>
+      <i>Special models (download required):</i>
+    </p>
+    <button class="loadModelButton" onclick="loadModel('large-models/gpt2-medium', 'bpe')" disabled>Load GPT2 377M Model</button>
+    <button class="loadModelButton" onclick="loadModel('large-models/gpt2-large', 'bpe')" disabled>Load GPT2 777M Model</button>
+    <button class="loadModelButton" onclick="loadModel('large-models/gpt2-xl', 'bpe')" disabled>Load GPT2 1.5B Model</button>
+
+    <br />
+    <br />
+    <label for="tokens">Number of tokens:</label>
+    <input type="number" min="1" max="300" value="100" id="tokensInput" disabled />
+    <br /><br />
+    <label for="topK">Top K:</label>
+    <input type="number" min="1" max="100" value="2" id="topKInput" disabled />
+    <br /><br />
+    <label for="temperature">Temperature:</label>
+    <input type="number" step="0.01" min="0.1" max="2" value="1" id="temperatureInput" disabled />
+    <br /><br />
+    <button id="generateButton" onclick="startGeneration()" disabled>Generate Text</button>
+    <br /><br />
+    <textarea id="prompt" rows="15" cols="50" disabled>
+WILL:
+Ah, how dare you challenge me?
+Have you forgotten I built WebGPT?&#13;&#10;</textarea
+    >
+    <br /><br />
+    <script>
+      const webgpuSupportMessage = document.getElementById("webgpuSupportMessage");
+      const loadModelButton = document.getElementsByClassName("loadModelButton");
+      const setModelButtonDisabled = (bool) => {
+        for (let i = 0; i < loadModelButton.length; i++) loadModelButton[i].disabled = bool;
+      };
+      const destroyCacheButton = document.getElementById("destroyCacheButton");
+
+      const tokensInput = document.getElementById("tokensInput");
+      const topKInput = document.getElementById("topKInput");
+      const temperatureInput = document.getElementById("temperatureInput");
+      const generateButton = document.getElementById("generateButton");
+      const promptTextarea = document.getElementById("prompt");
+
+      let GPTModel = null;
+
+      // Check for WebGPU support
+      if (!navigator.gpu) {
+        webgpuSupportMessage.innerHTML =
+          "WebGPU is not supported in your browser yet. Update Chrome to v113 or download <a href='https://www.google.com/chrome/canary/'>Chrome Canary</a>. Also available on <a href='https://www.microsoftedgeinsider.com/en-us/download/canary'>Edge Canary</a>.";
+        console.error("WebGPU is not supported");
+      } else {
+        webgpuSupportMessage.innerHTML = "WebGPU is supported in your browser!";
+        setModelButtonDisabled(false);
+      }
+
+      async function startGeneration() {
+        setTextareaDisabled(true);
+
+        const prompt = promptTextarea.value || " ";
+        const numTokens = tokensInput.value;
+
+        const topK = topKInput.value;
+        const temperature = temperatureInput.value;
+        const textStream = GPTModel.generate(prompt, numTokens, topK, temperature);
+
+        for await (const text of textStream) {
+          promptTextarea.value += text;
+        }
+
+        setTextareaDisabled(false);
+      }
+
+      async function loadModel(folder, tokenizer) {
+        setModelButtonDisabled(true);
+
+        GPTModel = new GPT(folder, tokenizer);
+        await GPTModel.initialize();
+
+        promptTextarea.value = GPTModel.defaultPrompt;
+        topKInput.value = GPTModel.defaultTopK;
+        tokensInput.value = GPTModel.defaultTokens;
+        temperatureInput.value = GPTModel.defaultTemperature;
+
+        setTextareaDisabled(false);
+        tokensInput.disabled = false;
+        topKInput.disabled = false;
+        temperatureInput.disabled = false;
+
+        destroyCacheButton.disabled = false;
+      }
+
+      function setTextareaDisabled(bool) {
+        promptTextarea.disabled = bool;
+        generateButton.disabled = bool;
+      }
+
+      async function continueGeneration() {
+        setTextareaDisabled(true);
+
+        const prompt = outputDiv.innerHTML || " ";
+        const numTokens = tokensInput.value;
+
+        outputDiv.innerHTML = prompt;
+
+        const topK = topKInput.value;
+        const temperature = temperatureInput.value;
+        const textStream = generate(prompt, numTokens, 10, topK, temperature);
+
+        for await (const text of textStream) {
+          outputDiv.innerHTML += text;
+        }
+
+        setTextareaDisabled(false);
+      }
+
+      function destroyCache() {
+        GPTModel.unloadBuffers();
+        destroyOperations();
+
+        GPTModel = null;
+
+        setModelButtonDisabled(false);
+
+        destroyCacheButton.disabled = true;
+        tokensInput.disabled = true;
+        topKInput.disabled = true;
+        temperatureInput.disabled = true;
+        setTextareaDisabled(true);
+      }
+    </script>
+  </body>
+</html>
