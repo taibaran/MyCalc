@@ -1,0 +1,43 @@
+{
+  "name": "chatgpt-web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:public": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "build:github": "vite build --base=/chatgpt-web/",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "tauri": "tauri",
+    "lint": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^5.0.0",
+    "@microsoft/fetch-event-source": "^2.0.1",
+    "@rollup/plugin-dsv": "^3.0.2",
+    "@sveltejs/vite-plugin-svelte": "^2.0.4",
+    "@tauri-apps/cli": "^1.2.3",
+    "@tsconfig/svelte": "^4.0.1",
+    "@types/marked": "^4.0.8",
+    "@types/node": "^18.15.11",
+    "bulma": "^0.9.4",
+    "bulma-prefers-dark": "^0.1.0-beta.1",
+    "copy-to-clipboard": "^3.3.3",
+    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-plugin-svelte3": "^4.0.0",
+    "flourite": "^1.2.3",
+    "postcss": "^8.4.22",
+    "sass": "^1.61.0",
+    "svelte": "^3.58.0",
+    "svelte-check": "^3.2.0",
+    "svelte-highlight": "^7.2.1",
+    "svelte-local-storage-store": "^0.4.0",
+    "svelte-markdown": "^0.2.3",
+    "svelte-spa-router": "^3.3.0",
+    "tslib": "^2.5.0",
+    "typescript": "^5.0.4",
+    "vite": "^4.1.0"
+  }
+}
