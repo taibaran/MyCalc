@@ -1,7 +1,5 @@
-# Resume Portfolio Laravel
+# [Simple Javascript Calculator](https://harsh98trivedi.github.io/Simple-JavaScript-Calculator) 
 
-Laravel Resume website with basic routing, views, controller, database handling, form validation & form submission etc. 
+A simple JavaScript Calculator made by [Harsh Trivedi](https://harsh98trivedi.github.io)
 
-<img src="view.png" >
-
-Run Migration for Contact Page
+![Simple Javascript Calculator](https://raw.githubusercontent.com/harsh98trivedi/Simple-JavaScript-Calculator/master/meta.jpg)
