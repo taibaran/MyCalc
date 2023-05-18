@@ -1,9 +1,33 @@
-// This can be false if you're using a fallback (i.e. SPA mode)
-import './app.scss'
-import App from './App.svelte'
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat with GPT-3</title>
+  <script>
+    async function chatWithGpt3() {
+      const prompt = document.getElementById('prompt').value;
+      const responseArea = document.getElementById('response');
 
-const app = new App({
-  target: document.getElementById('app') as HTMLElement
-})
+      const response = await fetch('https://api.openai.com/v1/engines/davinci-codex/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer YOUR_OPEN_AI_KEY'
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          max_tokens: 60,
+        }),
+      });
 
-export default app
+      const data = await response.json();
+      responseArea.textContent = data.choices[0].text;
+    }
+  </script>
+</head>
+<body>
+  <h1>Chat with GPT-3</h1>
+  <textarea id="prompt"></textarea>
+  <button onclick="chatWithGpt3()">Send</button>
+  <p id="response"></p>
+</body>
+</html>
